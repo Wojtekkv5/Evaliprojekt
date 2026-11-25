@@ -2657,29 +2657,25 @@ Nie będziemy prawić kazań ani straszyć na ślepo. Jako ekipa pasjonatów che
        ======================================================================== */
     let lastFormattedMessage = "";
 
-    function submitViaHiddenIframe(fields) {
-      const hiddenForm = document.createElement('form');
-      hiddenForm.method = 'POST';
-      hiddenForm.action = 'https://formsubmit.co/' + encodeURIComponent(INTERNAL_TARGET_EMAIL);
-      hiddenForm.target = 'hidden_mail_frame';
-      hiddenForm.style.display = 'none';
-
-      Object.entries(fields).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        hiddenForm.appendChild(input);
-      });
-
-      document.body.appendChild(hiddenForm);
-      hiddenForm.submit();
-      setTimeout(() => {
-        if (hiddenForm.parentNode) {
-          hiddenForm.parentNode.removeChild(hiddenForm);
-        }
-      }, 1500);
+  function submitViaHiddenIframe(fields) {
+  const cleanFields = {};
+  Object.entries(fields).forEach(([key, value]) => {
+    if (!key.startsWith('_')) {
+      cleanFields[key] = value;
     }
+  });
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      access_key: "234d603d-afa1-4b22-9b9b-d143970d424b",
+      subject: "Nowe zgłoszenie ze strony EVALI PROJEKT",
+      from_name: "Formularz EVALI PROJEKT",
+      ...cleanFields
+    })
+  });
+}
 
     async function handleContactSubmit(event) {
       event.preventDefault();
